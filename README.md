@@ -8,15 +8,11 @@ pyTunes Export uses Python 3.2. To use pyTunes Export, make sure Python is in yo
 
 Command line arguments may also be specified for automation. Currently, the following optional arguments are accepted:
 
-`-h, --help`          show help message and exit
-`-a, --all`           export all playlists
-`-e [EXTENSION [EXTENSION ...]], --extension [EXTENSION [EXTENSION ...]]`
-					specify the extension of the playlist in the form
-					'wpl' or 'm3u8'
-`-p [PLAYLISTS [PLAYLISTS ...]], --playlists [PLAYLISTS [PLAYLISTS ...]]`
-					specify the playlists to export
-`-f, --file`          export playlists specified in a text file (use the
-					settingsfile to specify the location of the text file)
+`-h, --help`		show help message and exit
+`-a, --all`		export all playlists
+`-e [EXTENSION [EXTENSION ...]], --extension [EXTENSION [EXTENSION ...]]`	specify the extension of the playlist in the form 'wpl' or 'm3u8'
+`-p [PLAYLISTS [PLAYLISTS ...]], --playlists [PLAYLISTS [PLAYLISTS ...]]`	specify the playlists to export
+`-f, --file`		export playlists specified in a text file (use the settings file to specify the location of the text file)
 						
 The same information may be produced by supplying `-h` or `--help`.
 
