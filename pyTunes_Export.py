@@ -14,6 +14,9 @@ DEBUG = False
 SETTINGS_NAME = "settings" # name for the settings file
 DEFAULT_FORMAT = "M3U8" # default format to export playlists in
 
+TAB_SIZE = 4 # number of spaces in a tab
+TABLE_WIDTH = 50 # width of table used to print playlists
+
 ##################################################################
 ## CLASSES
 ##################################################################
@@ -188,6 +191,9 @@ class Playlist():
     def __init__(self, playlists_node, xml_file, document = None):
         self.parser = Playlist_Parser(playlists_node, xml_file, document)
 
+    def __str__(self):
+        return self.name
+
     def set_name(self):
         """Sets the value of self.name by finding the value of "Name" in the XML"""
         self.name = self.parser.get_key_value(self.parser.node, "Name")
@@ -325,6 +331,7 @@ class iTunes_Library():
 
         chosen = []
         satisfied = False
+        tab = " " * TAB_SIZE
         
         # loop through the playlists and print them appropriately
         while not satisfied:
@@ -332,7 +339,7 @@ class iTunes_Library():
 
                 # determine its indentation level
                 indents = self.get_num_playlist_ancestors(playlist)
-                tab_string  = "\t" * indents
+                tab_string  = tab * indents
 
                 # determine the type of Playlist
                 type_string = ""
@@ -343,17 +350,23 @@ class iTunes_Library():
                 else:
                     type_string += "Playlist"
 
+
+                input_start = tab_string + playlist.name
+                input_end = " <" + type_string + "> [y/n]? "
+                filler_string = " " * (TABLE_WIDTH - len(input_start) - len(input_end))
+
                 # print the Playlist
-                export = input(tab_string + playlist.name + " <" + type_string + "> [y/n]? ")
+                export = input(input_start + filler_string + input_end)
 
                 # determine whether to export the playlist
                 if export == "y":
                     chosen.append(playlist)
 
             # run the playlist chooser until the user is satisfied with their selection
-            report = input("Playlists to be exported are " + str(chosen) + "\n" +
-                           "To continue, type \"y\", to choose a new " +
-                           "set of playlists, type \"n\" ")
+            chosen_string = (''.join(str(choice.name) + ", " for choice in chosen)).rstrip(", ")
+            report = input('Playlists to be exported are: ' + chosen_string + '\n' +
+                           'To continue, type "y", to choose a new ' +
+                           'set of playlists, type "n" ')
             if not report == "n":
                 satisfied = True
 
