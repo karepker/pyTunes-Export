@@ -19,10 +19,6 @@ The same information may be produced by supplying `-h` or `--help`.
 ## Features
 pyTunes Export currently features the ability to export playlists to Windows media playlist files (.wpl) and M3U files with support for special characters with UTF-8 (m3u8).
 
-## TODO
-* Align output in default mode
-* Add logging level command line argument 
-
 ## Support
 Let me know if you have any suggestions for features or run into any issues!
 
