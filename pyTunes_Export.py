@@ -1,4 +1,4 @@
-import os, sys, argparse, codecs
+import os, sys, argparse, codecs, getpass
 from xml.dom.minidom import parse
 from urllib.parse import unquote
 from platform import system
@@ -23,12 +23,12 @@ TABLE_WIDTH = 50 # width of table used to print playlists
 class iTunes_Library_Parser():
 
     def __init__(self, xml_file, document = None):
+        if DEBUG:
+            print("Called iTunes Library Parser constructor")
         self.xml_file = xml_file
         self.document = document
-        if self.document is None:
-            print("Parsing iTunes Library xml file ...", end = " ")
+        if document is None:
             self.document = parse(self.xml_file)
-            print("Done!")
         self.FIRST_TRACK_DICT = 3
         self.TRACK_DICT_SKIP = 4
         self.TRACK_DICT_ID = 2
@@ -245,8 +245,14 @@ class iTunes_Library():
     """Information about an iTunes XML Library"""
 
     def __init__(self, xml_file):
+        if DEBUG:
+            print("Called iTunes Library constructor")
+        if not DEBUG:
+            print("Parsing iTunes Library XML file ...", end = " ")
         self.xml_file = xml_file
         self.parser = iTunes_Library_Parser(self.xml_file)
+        if not DEBUG:
+            print("Done!")
 
     def get_playlists(self):
         """Sets the non time consuming information for each playlist (everything except items)"""
@@ -458,7 +464,7 @@ class WPL_Writer(Playlist_Writer):
                    + str(self.playlist.get_total_length()) + r'"/>')
         file.write("\n" + "\t" + "\t" + r'<meta name = "ItemCount" content = ' + "\""
                    + str(len(self.playlist.items)) + r'"/>')
-        file.write("\n" + "\t" + "\t" + r"<author>" + AUTHOR + r"</author>")
+        file.write("\n" + "\t" + "\t" + r"<author>" + getpass.getuser() + r"</author>")
         file.write("\n" + "\t" + "\t" + r"<title>" + self.playlist.name + r"</title>")
         file.write("\n" + "\t" + r"</head>")
 
@@ -626,6 +632,7 @@ def determine_writers(playlists, args, export_location):
     for extension in args.extension:
         
         if extension.lower() == "wpl":
+            print("Length of playlists is " + str(len(playlists)))
             for playlist in playlists:
                 writers.append(WPL_Writer(playlist, export_location))
 
@@ -645,7 +652,10 @@ def check_for_excluded(list1, list2):
 
 def command_line_args():
     """Set up command line arguments"""
-    
+ 
+    if DEBUG:
+        print("Parsing command line arguments")
+   
     # create the argument parser
     parser = argparse.ArgumentParser(description = "Export iTunes playlists")
 
@@ -665,6 +675,9 @@ def command_line_args():
 def settings_file(args):
     """Deal with settings file"""
     
+    if DEBUG:
+        print("Reading the settings file")
+
     lines = get_settings_lines()
     
     # test to see if the paths in the file exist, prompt for new ones if they don't
@@ -711,13 +724,19 @@ def write_playlists(args, library_location, export_location, playlists_location)
         # close the file
         playlists_file.close()
 
+
     # create the library and get the items to export
+    if DEBUG:
+        print("Reading library")
     library = iTunes_Library(library_location)
     library.get_items(playlist_names, args.all)
-    print("Items to export are " + str(library.export))
+    playlist_names = ', '.join([playlist.name for playlist in library.export]) 
+    print("Items to export are " + str(playlist_names) + ".")
 
     # create writers for the items and write them to disk
     writers = determine_writers(library.export, args, export_location)
+    if DEBUG:
+        print("Writing " + str(len(writers)) + " playlists")
     for writer in writers:
         writer.change_location()
         writer.write_file()
@@ -731,8 +750,3 @@ if __name__ == "__main__":
     library_location, export_location, playlists_location = settings_file(args)
     write_playlists(args, library_location, export_location, playlists_location)
     print("Finished writing playlists, will now exit!")
-    
-
-    
-
-
